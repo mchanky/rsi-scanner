@@ -2,12 +2,15 @@ name: Daily RSI-50 Scanner
 
 on:
   schedule:
-    - cron: '35 22 * * 1-5'
+    - cron: '35 22 * * 1-5' # Runs at 22:35 UTC (5 mins after your TD9 script so emails don't batch together)
   workflow_dispatch:
 
 jobs:
   run-rsi-scanner:
     runs-on: ubuntu-latest
+    env:
+      MAIL_USER: ${{ secrets.MAIL_USER }}
+      MAIL_PASS: ${{ secrets.MAIL_PASS }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,8 +26,5 @@ jobs:
           pip install yfinance pandas
 
       - name: Run RSI scanner script
-        env:
-          MAIL_USER: ${{ secrets.MAIL_USER }}
-          MAIL_PASS: ${{ secrets.MAIL_PASS }}
         run: |
           python rsi_scanner.py
